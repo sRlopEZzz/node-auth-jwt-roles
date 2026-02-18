@@ -1,5 +1,5 @@
 // src/controllers/UserController.js
-import jwtUtils from "../utils/jwt.js";
+import jwtUtils from "../utils/jwt.js"
 import Usuario from "../models/Usuario.js";
 
 const UserController = {

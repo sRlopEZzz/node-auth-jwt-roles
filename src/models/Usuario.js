@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../database/connection.js";
+import sequelize from "../database/conection.js";
 
 const Usuario = sequelize.define(
   "Usuario",
@@ -40,16 +40,3 @@ const Usuario = sequelize.define(
 );
 
 export default Usuario;
-
-
-const Casa = sequelize.define(
-"casa_1",{
-  
-num_casa : {
- notnull : false,
- type: DataTypes.INTEGER,
-
-
-
-}
-})
