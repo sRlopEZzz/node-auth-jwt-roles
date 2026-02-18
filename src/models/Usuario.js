@@ -1,4 +1,4 @@
-modelimport { DataTypes } from "sequelize";
+import { DataTypes } from "sequelize";
 import sequelize from "../database/connection.js";
 
 const Usuario = sequelize.define(
@@ -40,3 +40,16 @@ const Usuario = sequelize.define(
 );
 
 export default Usuario;
+
+
+const Casa = sequelize.define(
+"casa_1",{
+  
+num_casa : {
+ notnull : false,
+ type: DataTypes.INTEGER,
+
+
+
+}
+})
