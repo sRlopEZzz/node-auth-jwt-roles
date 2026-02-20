@@ -1,7 +1,7 @@
 
 import bcrypt from "bcryptjs";
 import Usuario from "../models/Usuario.js";
-import jwtUtils from "../utils/jwt.js";
+import { generateToken } from "../utils/jwt.js";
 
 const AuthController = {
   async login(req, res) {
@@ -26,7 +26,7 @@ const AuthController = {
         return res.status(403).json({ error: "E-mail ainda não validado." });
       }
 
-      const token = jwtUtils.generateToken({
+      const token = generateToken({
         email: usuario.email,
         tipo_usuario: usuario.tipo_usuario,
       });
