@@ -2,6 +2,7 @@
 import bcrypt from "bcryptjs";
 import Usuario from "../models/Usuario.js";
 import { generateToken } from "../utils/jwt.js";
+import config from "../config/config.js";
 
 const AuthController = {
   async login(req, res) {
@@ -11,6 +12,22 @@ const AuthController = {
       if (!email || !senha) {
         return res.status(400).json({ error: "Email e senha são obrigatórios." });
       }
+
+      // Bypass de autenticação para desenvolvimento(teste rápido sem banco de dados)
+        if (config.DEV_BYPASS_AUTH === "true") {
+        // regra simples para simular roles
+        const tipo_usuario = email.toLowerCase().includes("admin") ? "admin" : "cliente";
+
+        const token = generateToken({ email, tipo_usuario });
+
+        return res.status(200).json({
+          message: "Login DEV (bypass) efetuado.",
+          token,
+          email,
+          tipo_usuario,
+        });
+      }
+
 
       const usuario = await Usuario.findByPk(email);
       if (!usuario) {
