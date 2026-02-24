@@ -1,5 +1,5 @@
 // src/middlewares/auth.js
-import { verifyToken } from "../utils/jwt.js";
+import { verifyAuthToken } from "../utils/jwt.js";
 
 export default function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -12,7 +12,7 @@ export default function authMiddleware(req, res, next) {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = verifyToken(token);
+    const decoded = verifyAuthToken(token);
     req.user = decoded; // guarda dados do token (email, role, etc.)
     next(); // deixa passar para o controller
   } catch (err) {
