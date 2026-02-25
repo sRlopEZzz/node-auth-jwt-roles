@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import Usuario from "../models/Usuario.js";
-import { generateEmailToken } from "../utils/jwt.js";
+import { generateEmailToken, verifyEmailToken } from "../utils/jwt.js";
 
 const RegisterController = {    
     async register(req, res) {
@@ -26,12 +26,13 @@ const RegisterController = {
                 senha: hashedPassword,
                 tipo_usuario: "cliente", //padrão para novos registros
                 email_validado: false, //email ainda não validado
+                ativo: false, //conta inativa até validar email
             });
 
             //gerar token de validação de email
             const emailToken = generateEmailToken({ email: novoUsuario.email });
-// Link de validação
-             const link = `http://localhost:3000/api/public/validar-email?token=${token}`;
+                    // Link de validação
+             const link = `http://localhost:3000/api/public/validar-email?token=${emailToken}`;
 
             
              // Simulação de envio de email (por agora)
@@ -40,11 +41,41 @@ const RegisterController = {
              console.log(link);
              console.log("====================================");
 
-             return res.status(201).json({ message: "Usuário registrado com sucesso. Verifique seu email para validar a conta." });
-} catch (error) {   
-    console.error("Erro no registro:", error);
-    return res.status(500).json({ error: "Erro no servidor." });        
+                    return res.status(201).json({ message: "Usuário registrado com sucesso. Verifique seu email para validar a conta." });
+                                } catch (error) {   
+                                    console.error("Erro no registro:", error);
+                                    return res.status(500).json({ error: "Erro no servidor." });        
+                                        }
+                            },
+            async validarEmail(req, res){
+                try{
+                        const { token}= req.query;
+                        if(!token) {
+                            return res.status(400).json({ error: "Token de validação ausente." });
                         }
-            },
-};
+
+                        let decoded;
+                         try {
+                            decoded = verifyEmailToken(token);
+                        } catch(error) {
+                            return res.status(400).json({ error:"Token inválido ou expirado."});
+                }
+                            
+                            const usuario = await Usuario.findByPk(decoded.email);
+                            if(!usuario) {
+                                return res.status(404).json({ error: "Usuario nao encontrado."})
+                            }
+                           
+                            // Atualiza o campo email_validado para true
+                            await usuario.update({ email_validado: true, ativo: true });
+                            return res.status(200).json({ message: "Email validado com sucesso. Agora você pode fazer login." });
+
+
+                }catch(error) {
+                    console.error("Erro na validação de email:", error);
+                    return res.status(500).json({ error: "Erro no servidor." });
+            }
+        }
+    };
+                
 export default RegisterController;
