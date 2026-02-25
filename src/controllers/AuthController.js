@@ -1,7 +1,7 @@
 
 import bcrypt from "bcryptjs";
 import Usuario from "../models/Usuario.js";
-import { generateToken } from "../utils/jwt.js";
+import { generateAuthToken } from "../utils/jwt.js";
 import config from "../config/config.js";
 
 const AuthController = {
@@ -18,7 +18,7 @@ const AuthController = {
         // regra simples para simular roles
         const tipo_usuario = email.toLowerCase().includes("admin") ? "admin" : "cliente";
 
-        const token = generateToken({ email, tipo_usuario });
+        const token = generateAuthToken({ email: usuario.email, tipo_usuario: usuario.tipo_usuario });
 
         return res.status(200).json({
           message: "Login DEV (bypass) efetuado.",
