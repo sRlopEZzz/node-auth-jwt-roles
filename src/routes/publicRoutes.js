@@ -8,7 +8,7 @@ const router = Router();
 router.post("/login", AuthController.login);
 
 //reegister
-router.post("register", RegisterController.register);
+router.post("/register", RegisterController.register);
 
 
 //validar email

@@ -10,8 +10,22 @@ const RegisterController = {
             if(!email || !senha) {
                 return res.status(400).json({ error: "Email e senha são obrigatórios." });
             }
+                            if (config.DEV_BYPASS_AUTH === "true") {
+                const emailToken = generateEmailToken({ email });
+                const link = `http://localhost:3000/api/public/validar-email?token=${emailToken}`;
 
-            //verifica se ja existe um user com o email
+                console.log("====================================");
+                console.log("LINK DE VALIDACAO EMAIL (DEV):");
+                console.log(link);
+                console.log("====================================");
+
+                return res.status(201).json({
+                    message: "Conta criada em modo DEV (sem BD). Verifique o link no console.",
+                    link,
+                });
+                }
+
+                        //verifica se ja existe um user com o email
             const existente = await Usuario.findByPk(email);
             if(existente) {     
                 return res.status(409).json({ error: "Email já registrado." });
@@ -28,19 +42,6 @@ const RegisterController = {
                 email_validado: false, //email ainda não validado
                 ativo: false, //conta inativa até validar email
             });
-
-            //gerar token de validação de email
-            const emailToken = generateEmailToken({ email: novoUsuario.email });
-                    // Link de validação
-             const link = `http://localhost:3000/api/public/validar-email?token=${emailToken}`;
-
-            
-             // Simulação de envio de email (por agora)
-             console.log("====================================");
-             console.log("LINK DE VALIDACAO EMAIL:");
-             console.log(link);
-             console.log("====================================");
-
                     return res.status(201).json({ message: "Usuário registrado com sucesso. Verifique seu email para validar a conta." });
                                 } catch (error) {   
                                     console.error("Erro no registro:", error);
@@ -60,24 +61,20 @@ const RegisterController = {
                         } catch(error) {
                             return res.status(400).json({ error:"Token inválido ou expirado."});
                 }
+
+                if (config.DEV_BYPASS_AUTH === "true") {
+                return res.status(200).json({
+                    message: "Email validado em modo DEV (sem BD).",
+                    email: decoded.email,
+                });
                             
-                            const usuario = await Usuario.findByPk(decoded.email);
-                            if(!usuario) {
-                                return res.status(404).json({ error: "Usuario nao encontrado."})
-                            }
-                            if(usuario.email_validado) {
-                                return res.status(200).json({ message: "Email já validado anteriormente." });
-                            }
-                            // Atualiza o campo email_validado para true
-                            await usuario.update({ email_validado: true, ativo: true });
-                            return res.status(200).json({ message: "Email validado com sucesso. Agora você pode fazer login." });
-
-
-                }catch(error) {
-                    console.error("Erro na validação de email:", error);
-                    return res.status(500).json({ error: "Erro no servidor." });
-            }
+                            
         }
+    }
+}, catch (error) {        console.error("Erro na validação de email:", error);
+        return res.status(500).json({ error: "Erro no servidor." });
+    }
+
     };
                 
 export default RegisterController;
