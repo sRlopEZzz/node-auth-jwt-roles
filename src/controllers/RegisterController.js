@@ -65,7 +65,9 @@ const RegisterController = {
                             if(!usuario) {
                                 return res.status(404).json({ error: "Usuario nao encontrado."})
                             }
-                           
+                            if(usuario.email_validado) {
+                                return res.status(200).json({ message: "Email já validado anteriormente." });
+                            }
                             // Atualiza o campo email_validado para true
                             await usuario.update({ email_validado: true, ativo: true });
                             return res.status(200).json({ message: "Email validado com sucesso. Agora você pode fazer login." });
