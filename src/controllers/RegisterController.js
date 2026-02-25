@@ -1,8 +1,7 @@
 import bcrypt from "bcryptjs";
 import Usuario from "../models/Usuario.js";
-import { generateEmailToken, verifyEmailToken } from "../utils/jwt.js";
-import config from "../config.js"; // <-- ajusta o caminho se necessário
-
+import { generateEmailToken, verifyEmailToken } from "../utils/jwt.js"; 
+import config from "../config/config.js";
 const RegisterController = {
   async register(req, res) {
     try {
