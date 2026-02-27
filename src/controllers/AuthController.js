@@ -1,6 +1,4 @@
-
 import bcrypt from "bcryptjs";
-import Usuario from "../models/Usuario.js";
 import { generateAuthToken } from "../utils/jwt.js";
 import config from "../config/config.js";
 
@@ -13,12 +11,9 @@ const AuthController = {
         return res.status(400).json({ error: "Email e senha são obrigatórios." });
       }
 
-      // Bypass de autenticação para desenvolvimento(teste rápido sem banco de dados)
-        if (config.DEV_BYPASS_AUTH === "true") {
-        // regra simples para simular roles
+      if (config.DEV_BYPASS_AUTH === "true") {
         const tipo_usuario = email.toLowerCase().includes("admin") ? "admin" : "cliente";
-
-    const token = generateAuthToken({ email, tipo_usuario });
+        const token = generateAuthToken({ email, tipo_usuario });
 
         return res.status(200).json({
           message: "Login DEV (bypass) efetuado.",
@@ -28,6 +23,7 @@ const AuthController = {
         });
       }
 
+      const { default: Usuario } = await import("../models/Usuario.js");
 
       const usuario = await Usuario.findByPk(email);
       if (!usuario) {
@@ -42,11 +38,11 @@ const AuthController = {
       if (!usuario.email_validado) {
         return res.status(403).json({ error: "E-mail ainda não validado." });
       }
-      
-const token = generateAuthToken({
-  email: usuario.email,
-  tipo_usuario: usuario.tipo_usuario,
-});
+
+      const token = generateAuthToken({
+        email: usuario.email,
+        tipo_usuario: usuario.tipo_usuario,
+      });
 
       return res.status(200).json({
         token,
@@ -54,6 +50,7 @@ const token = generateAuthToken({
         tipo_usuario: usuario.tipo_usuario,
       });
     } catch (error) {
+      console.error("Erro no login:", error);
       return res.status(500).json({ error: "Erro no servidor." });
     }
   },
