@@ -18,7 +18,7 @@ const AuthController = {
         // regra simples para simular roles
         const tipo_usuario = email.toLowerCase().includes("admin") ? "admin" : "cliente";
 
-        const token = generateAuthToken({ email: usuario.email, tipo_usuario: usuario.tipo_usuario });
+    const token = generateAuthToken({ email, tipo_usuario });
 
         return res.status(200).json({
           message: "Login DEV (bypass) efetuado.",
