@@ -42,11 +42,11 @@ const AuthController = {
       if (!usuario.email_validado) {
         return res.status(403).json({ error: "E-mail ainda não validado." });
       }
-
-      const token = generateToken({
-        email: usuario.email,
-        tipo_usuario: usuario.tipo_usuario,
-      });
+      
+const token = generateAuthToken({
+  email: usuario.email,
+  tipo_usuario: usuario.tipo_usuario,
+});
 
       return res.status(200).json({
         token,
